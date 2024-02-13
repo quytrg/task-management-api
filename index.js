@@ -4,6 +4,7 @@ const database = require('./config/database')
 const routesApiVer1 = require('./api/v1/routes/index.route')
 
 const app = express()
+app.use(express.json())
 database.connect()
 const port = process.env.PORT
 
