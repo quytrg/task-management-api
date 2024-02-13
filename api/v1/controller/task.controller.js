@@ -1,21 +1,50 @@
 const Task = require('../models/task.model')
 
+// helpers
+const paginationHelper = require('../../../helpers/pagination.helper')
+
 // [GET] /api/v1/tasks/
 module.exports.index = async (req, res) => {
-    try { 
+    try {
         const filter = {
             deleted: false
         }
-    
+
+        // status
         if (req.query.status) {
             filter.status = req.query.status
         }
-    
-        const tasks = await Task.find(filter) 
-    
-        res.json(tasks)
-    }
-    catch (error) {
+
+        // sort
+        const sort = {}
+        if (req.query.sortKey && req.query.sortValue) {
+            sort[req.query.sortKey] = req.query.sortValue
+        }
+
+        // pagination
+        const initPagination = {
+            currentPage: 1,
+            limit: 2
+        }
+        initPagination.totalRecords = await Task.countDocuments(filter)
+        const paginationObject = paginationHelper(req.query, initPagination)
+
+
+        const tasks = await Task
+            .find(filter)
+            .limit(paginationObject.limit)
+            .skip(paginationObject.skip)
+            .sort(sort)
+
+        const result = {
+            tasks,
+            totalPages: paginationObject.totalPages,
+            currentPage: paginationObject.currentPage,
+            limit: paginationObject.limit,
+            skip: paginationObject.skip
+        }
+        res.json(result)
+    } catch (error) {
         console.log('Error occured:', error);
         res.json('Not found');
     }
