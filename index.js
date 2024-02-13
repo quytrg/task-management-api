@@ -1,9 +1,11 @@
 require('dotenv').config()
 const express = require('express')
+const cors = require('cors')
 const database = require('./config/database')
 const routesApiVer1 = require('./api/v1/routes/index.route')
 
 const app = express()
+app.use(cors())
 app.use(express.json())
 database.connect()
 const port = process.env.PORT
