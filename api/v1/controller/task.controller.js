@@ -85,8 +85,44 @@ module.exports.changeStatus = async (req, res) => {
 
         res.json({
             code: 200,
-            document,
-            message: 'Update successfully'
+            message: 'Update successfully',
+            document
+        });
+    } catch (error) {
+        console.log('Error occured:', error);
+        res.json({
+            code: 404,
+            message: 'Not found'
+        });
+    }
+}
+
+// [PATCH] /api/v1/tasks/change-multi
+module.exports.changeMulti = async (req, res) => {
+    try {
+        const { ids, key, value } = req.body
+        
+        let document = {}
+        switch (key) {
+            case 'status':
+                document = await Task.updateMany({
+                    _id: { $in: ids }
+                }, {
+                    status: value
+                })
+                break;
+            default:
+                res.json({
+                    code: 404,
+                    message: 'Not found'
+                });
+                break;
+        }
+
+        res.json({
+            code: 200,
+            message: 'Update successfully',
+            document
         });
     } catch (error) {
         console.log('Error occured:', error);
