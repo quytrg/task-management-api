@@ -132,3 +132,42 @@ module.exports.changeMulti = async (req, res) => {
         });
     }
 }
+
+// [POST] /api/v1/tasks/create
+module.exports.create = async (req, res) => {
+    try {
+        const task = new Task(req.body)
+        const document = await task.save()
+
+        res.json({
+            code: 200,
+            message: 'Create successfully',
+            document
+        });
+    } catch (error) {
+        console.log('Error occured:', error);
+        res.json({
+            code: 400,
+            message: 'An error occured while creating the record'
+        });
+    }
+}
+
+// [PATCH] /api/v1/tasks/edit/:id
+module.exports.edit = async (req, res) => {
+    try {
+        const id = req.params.id
+        const document = await Task.updateOne({ _id: id }, req.body)
+        res.json({
+            code: 200,
+            message: 'Update successfully',
+            document
+        });
+    } catch (error) {
+        console.log('Error occured:', error);
+        res.json({
+            code: 400,
+            message: 'An error occured while editing the record'
+        });
+    }
+}
