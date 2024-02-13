@@ -111,6 +111,14 @@ module.exports.changeMulti = async (req, res) => {
                     status: value
                 })
                 break;
+            case 'delete':
+                document = await Task.updateMany({
+                    _id: { $in: ids }
+                }, {
+                    deleted: true,
+                    deletedAt: new Date()
+                })
+                break;
             default:
                 res.json({
                     code: 404,
@@ -168,6 +176,29 @@ module.exports.edit = async (req, res) => {
         res.json({
             code: 400,
             message: 'An error occured while editing the record'
+        });
+    }
+}
+
+
+// [DELETE] /api/v1/tasks/delete/:id
+module.exports.delete = async (req, res) => {
+    try {
+        const id = req.params.id
+        const document = await Task.updateOne({ _id: id }, {
+            deleted: true,
+            deletedAt: new Date()
+        })
+        res.json({
+            code: 200,
+            message: 'Delete successfully',
+            document
+        });
+    } catch (error) {
+        console.log('Error occured:', error);
+        res.json({
+            code: 400,
+            message: 'An error occured while deleting the record'
         });
     }
 }
