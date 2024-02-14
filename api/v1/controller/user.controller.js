@@ -13,6 +13,16 @@ module.exports.register = async (req, res) => {
     try {
         req.body.password = md5(req.body.password)
 
+        const emailExist = await User.findOne({ email: req.body.email })
+
+        if (emailExist) {
+            res.json({
+                code: 400,
+                message: 'User already exists'
+            })
+            return
+        }
+
         const user = new User({
             fullName: req.body.fullName,
             email: req.body.email,
@@ -191,6 +201,36 @@ module.exports.resetPassword = async (req, res) => {
         res.json({
             code: 200,
             message: 'Change password successfully',
+        })
+    } catch (error) {
+        console.log('Error occured:', error);
+        res.json({
+            code: 400,
+            message: 'An error occured while reseting password'
+        });
+    }
+}
+
+// [GET] /api/v1/users/detail
+module.exports.detail = async (req, res) => {
+    try {
+        const token = req.cookies.token
+
+        const user = await User.findOne({
+            token: token
+        }).select('fullName email')
+
+        if (!user) {
+            res.json({
+                code: 400,
+                message: 'User not found',
+            })
+        }
+        
+        res.json({
+            code: 200,
+            message: 'Retrive user information successfully',
+            info: user
         })
     } catch (error) {
         console.log('Error occured:', error);
