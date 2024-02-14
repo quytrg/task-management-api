@@ -35,3 +35,44 @@ module.exports.register = async (req, res) => {
         });
     }
 }
+
+// [POST] /api/v1/users/login
+module.exports.login = async (req, res) => {
+    try {
+        const email = req.body.email
+        const password = req.body.password
+
+        const user = await User.findOne({ email: email, deleted: false })
+
+        if (!user) {
+            res.json({
+                code: 400,
+                message: 'Email does not existed',
+            })
+            return
+        }
+
+        if (user.password !== md5(password)) {
+            res.json({
+                code: 400,
+                message: 'Password does not match',
+            })
+            return
+        }
+
+        const token = user.token
+        res.cookie('token', token)
+
+        res.json({
+            code: 200,
+            message: 'Login successfully',
+            token: token
+        })
+    } catch (error) {
+        console.log('Error occured:', error);
+        res.json({
+            code: 400,
+            message: 'An error occured while logining the account'
+        });
+    }
+}
