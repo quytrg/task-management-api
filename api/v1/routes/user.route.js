@@ -18,4 +18,6 @@ router.post('/password/reset', authMiddleware.requireAuth, controller.resetPassw
 
 router.get('/detail', authMiddleware.requireAuth, controller.detail)
 
+router.get('/', authMiddleware.requireAuth, controller.index)
+
 module.exports = router

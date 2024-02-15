@@ -227,3 +227,21 @@ module.exports.detail = async (req, res) => {
         });
     }
 }
+
+// [GET] /api/v1/users
+module.exports.index = async (req, res) => {
+    try { 
+        const users = await User.find({ deleted: false }).select('fullName email')
+        res.json({
+            code: 200,
+            message: 'Retrive users information successfully',
+            users
+        })
+    } catch (error) {
+        console.log('Error occured:', error);
+        res.json({
+            code: 400,
+            message: 'An error occured while retriving email and otp'
+        });
+    }
+}
