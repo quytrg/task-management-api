@@ -8,6 +8,10 @@ const searchHelper = require('../../../helpers/search.helper')
 module.exports.index = async (req, res) => {
     try {
         const filter = {
+            $or: [
+                { createdBy: req.user.id },
+                { teamMember: req.user.id }
+            ],
             deleted: false
         }
 
