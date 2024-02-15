@@ -178,7 +178,7 @@ module.exports.otpPassword = async (req, res) => {
 // [POST] /api/v1/users/password/reset
 module.exports.resetPassword = async (req, res) => {
     try {
-        const token = req.cookies.token
+        const token = req.user.token
         const password = req.body.password
 
         const user = await User.findOne({
@@ -213,24 +213,11 @@ module.exports.resetPassword = async (req, res) => {
 
 // [GET] /api/v1/users/detail
 module.exports.detail = async (req, res) => {
-    try {
-        const token = req.cookies.token
-
-        const user = await User.findOne({
-            token: token
-        }).select('fullName email')
-
-        if (!user) {
-            res.json({
-                code: 400,
-                message: 'User not found',
-            })
-        }
-        
+    try { 
         res.json({
             code: 200,
             message: 'Retrive user information successfully',
-            info: user
+            info: req.user
         })
     } catch (error) {
         console.log('Error occured:', error);
