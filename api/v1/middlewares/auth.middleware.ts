@@ -1,9 +1,10 @@
-const User = require('../models/user.model')
+import { Request, Response, NextFunction } from "express"
+import User from "../models/user.model"
 
-module.exports.requireAuth = async (req, res, next) => {
+const requireAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         if (req.headers.authorization) {
-            const token = req.headers.authorization.split(' ')[1]
+            const token: string = req.headers.authorization.split(' ')[1]
             const user = await User.findOne({
                 token: token
             }).select('-password')
@@ -14,7 +15,7 @@ module.exports.requireAuth = async (req, res, next) => {
                 })
             }
 
-            req.user = user
+            req['user'] = user
 
             next()
         }
@@ -32,3 +33,5 @@ module.exports.requireAuth = async (req, res, next) => {
         })
     }
 }
+
+export { requireAuth }

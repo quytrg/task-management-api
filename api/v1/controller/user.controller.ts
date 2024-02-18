@@ -1,19 +1,18 @@
-const User = require('../models/user.model')
-const ForgotPassword = require('../models/forgot-password.model')
+import { Request, Response } from "express"
+import User from "../models/user.model"
+import ForgotPassword from "../models/forgot-password.model"
 
 // helpers
-const generateHelper = require('../../../helpers/generate.helper')
-const sendEmailHelper = require('../../../helpers/sendEmail.helper')
+import { generateRandomString, generateRandomNumber } from "../../../helpers/generate.helper"
+import sendEmail from "../../../helpers/sendEmail.helper"
 
 // hash password with md5
-const md5 = require('md5')
+import md5 from 'md5'
 
 // [POST] /api/v1/users/register
-module.exports.register = async (req, res) => {
+export const register = async (req: Request, res: Response) => {
     try {
-        req.body.password = md5(req.body.password)
-
-        const emailExist = await User.findOne({ email: req.body.email })
+        const emailExist = await User.findOne({ email: req.body.email, deleted: false })
 
         if (emailExist) {
             res.json({
@@ -22,12 +21,12 @@ module.exports.register = async (req, res) => {
             })
             return
         }
-
+        req.body.password = md5(req.body.password)
         const user = new User({
             fullName: req.body.fullName,
             email: req.body.email,
             password: req.body.password,
-            token: generateHelper.generateRandomString(30)
+            token: generateRandomString(30)
         })
         await user.save()
 
@@ -49,7 +48,7 @@ module.exports.register = async (req, res) => {
 }
 
 // [POST] /api/v1/users/login
-module.exports.login = async (req, res) => {
+export const login = async (req: Request, res: Response) => {
     try {
         const email = req.body.email
         const password = req.body.password
@@ -90,7 +89,7 @@ module.exports.login = async (req, res) => {
 }
 
 // [POST] /api/v1/users/password/forgot
-module.exports.forgotPassword = async (req, res) => {
+export const forgotPassword = async (req: Request, res: Response) => {
     try {
         const email = req.body.email
 
@@ -106,7 +105,7 @@ module.exports.forgotPassword = async (req, res) => {
 
         // save otp data to forgot-password model
         const expireTime = 3
-        const otp = generateHelper.generateRandomNumber(6)
+        const otp = generateRandomNumber(6)
         const forgotPasswordObject = {
             email: email,
             otp: otp,
@@ -120,7 +119,7 @@ module.exports.forgotPassword = async (req, res) => {
         const emailContentHtml = `
             Mã OTP xác minh lấy lại mật khẩu là <b>${otp}</b>. Thời hạn sử dụng là ${expireTime} phút. Lưu ý không được để lộ mã OTP. 
         `
-        sendEmailHelper.sendEmail(user.email, emailSubject, emailContentHtml)
+        sendEmail(user.email, emailSubject, emailContentHtml)
 
         res.json({
             code: 200,
@@ -136,7 +135,7 @@ module.exports.forgotPassword = async (req, res) => {
 }
 
 // [POST] /api/v1/users/password/otp
-module.exports.otpPassword = async (req, res) => {
+export const otpPassword = async (req: Request, res: Response) => {
     try {
         const email = req.body.email
         const otp = req.body.otp
@@ -176,9 +175,9 @@ module.exports.otpPassword = async (req, res) => {
 }
 
 // [POST] /api/v1/users/password/reset
-module.exports.resetPassword = async (req, res) => {
+export const resetPassword = async (req: Request, res: Response) => {
     try {
-        const token = req.user.token
+        const token = req['user'].token
         const password = req.body.password
 
         const user = await User.findOne({
@@ -212,12 +211,12 @@ module.exports.resetPassword = async (req, res) => {
 }
 
 // [GET] /api/v1/users/detail
-module.exports.detail = async (req, res) => {
+export const detail = async (req: Request, res: Response) => {
     try { 
         res.json({
             code: 200,
             message: 'Retrive user information successfully',
-            info: req.user
+            info: req['user']
         })
     } catch (error) {
         console.log('Error occured:', error);
@@ -229,7 +228,7 @@ module.exports.detail = async (req, res) => {
 }
 
 // [GET] /api/v1/users
-module.exports.index = async (req, res) => {
+export const index = async (req: Request, res: Response) => {
     try { 
         const users = await User.find({ deleted: false }).select('fullName email')
         res.json({

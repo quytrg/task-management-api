@@ -1,10 +1,10 @@
-const express = require('express')
-const router = express.Router()
+import { Router } from "express"
+const router: Router = Router()
 
-const controller = require('../controller/user.controller')
+import * as controller from '../controller/user.controller'
 
 // middlewares
-const authMiddleware = require('../middlewares/auth.middleware')
+import * as authMiddleware from '../middlewares/auth.middleware'
 
 router.post('/register', controller.register)
 
@@ -20,4 +20,4 @@ router.get('/detail', authMiddleware.requireAuth, controller.detail)
 
 router.get('/', authMiddleware.requireAuth, controller.index)
 
-module.exports = router
+export const userRouter: Router = router

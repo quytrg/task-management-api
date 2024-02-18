@@ -1,4 +1,4 @@
-module.exports.sendEmail = (email, subject, html) => {
+const sendEmail = (email: string, subject: string, html: string) => {
     const nodemailer = require("nodemailer");
 
     const transporter = nodemailer.createTransport({
@@ -25,3 +25,5 @@ module.exports.sendEmail = (email, subject, html) => {
         }
     });
 };
+
+export default sendEmail

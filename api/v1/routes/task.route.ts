@@ -1,7 +1,7 @@
-const express = require('express')
-const router = express.Router()
+import { Router } from "express" 
+const router: Router = Router()
 
-const controller = require('../controller/task.controller')
+import * as controller from '../controller/task.controller'
 
 router.get('/', controller.index)
 
@@ -15,6 +15,6 @@ router.post('/create', controller.create)
 
 router.patch('/edit/:id', controller.edit)
 
-router.delete('/delete/:id', controller.delete)
+router.delete('/delete/:id', controller.deleteTask)
 
-module.exports = router
+export const taskRouter: Router = router

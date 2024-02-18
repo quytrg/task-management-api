@@ -1,4 +1,4 @@
-const mongoose = require("mongoose")
+import mongoose from "mongoose";
 
 const forgotPasswordSchema = new mongoose.Schema({
     email: String,
@@ -11,4 +11,4 @@ const forgotPasswordSchema = new mongoose.Schema({
 
 const ForgotPassword = mongoose.model("ForgotPassword", forgotPasswordSchema);
 
-module.exports = ForgotPassword;
+export default ForgotPassword
